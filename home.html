@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Your Music | Insync Worldwide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea, select, button {
+            margin-top: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #34495e;
+        }
+        .note {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 5px 0;
+        }
+        ul li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+        .radio-group {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+    <script>
+        function updatePrimaryArtists() {
+            const featuredArtistsInput = document.getElementById('featured-artists');
+            const primaryArtistsList = document.getElementById('primary-artists-list');
+            const featuredArtists = featuredArtistsInput.value.split(',').map(artist => artist.trim()).filter(artist => artist);
+
+            primaryArtistsList.innerHTML = '';
+
+            featuredArtists.forEach(artist => {
+                const listItem = document.createElement('li');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'primary_artists[]';
+                checkbox.value = artist;
+                checkbox.onchange = limitPrimaryArtists;
+
+                listItem.appendChild(checkbox);
+                listItem.appendChild(document.createTextNode(artist));
+                primaryArtistsList.appendChild(listItem);
+            });
+        }
+
+        function limitPrimaryArtists() {
+            const checkboxes = document.querySelectorAll('#primary-artists-list input[type="checkbox"]');
+            const selected = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+
+            if (selected.length > 3) {
+                alert('You can select up to three primary artists only.');
+                this.checked = false;
+            }
+
+            const selectedArtists = selected.map(checkbox => checkbox.value);
+            document.getElementById('saved-primary-artists').value = selectedArtists.join(',');
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Your Music</h1>
+        <p>Fill out the form below to submit your music for distribution to DSPs.</p>
+        <form action="/submit-music" method="POST" enctype="multipart/form-data">
+            <label for="artist-name">Artist Name</label>
+            <input type="text" id="artist-name" name="artist_name" placeholder="Enter your artist name" required>
+
+            <label for="song-title">Song Title</label>
+            <input type="text" id="song-title" name="song_title" placeholder="Enter the song title" required>
+
+            <label for="genre">Genre</label>
+            <select id="genre" name="genre" required>
+                <option value="">Select a genre</option>
+                <option value="Amapiano">Amapiano</option>
+                <option value="House">House</option>
+                <option value="Hip Hop">Hip Hop</option>
+                <option value="Afrobeat">Afrobeat</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label for="featured-artists">Featured Artists</label>
+            <input type="text" id="featured-artists" name="featured_artists" placeholder="Enter featured artists (comma-separated)" oninput="updatePrimaryArtists()" required>
+
+            <label for="primary-artists-list">Primary Artists</label>
+            <ul id="primary-artists-list"></ul>
+            <p class="note">* Please select up to three primary artists from the featured artists.</p>
+
+            <input type="hidden" id="saved-primary-artists" name="saved_primary_artists">
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email address" required>
+
+            <label for="wav-file">Upload WAV File</label>
+            <input type="file" id="wav-file" name="wav_file" accept=".wav" required>
+            <p class="note">* Only WAV files are accepted.</p>
+
+            <label for="cover-art">Upload Cover Art</label>
+            <input type="file" id="cover-art" name="cover_art" accept="image/*" required>
+            <p class="note">* Cover art is mandatory and should be in image format (JPG, PNG, etc.).</p>
+            <p class="note">* Album Cover Requirements:</p>
+            <ul class="note">
+                <li>File Format: JPG (.jpg)</li>
+                <li>Dimensions: Minimum 1500x1500 pixels, 3000x3000 maximum</li>
+                <li>File Size (Maximum): 15 MB</li>
+            </ul>
+
+            <label for="content-advisory">Content Advisory</label>
+            <div class="radio-group">
+                <label><input type="radio" name="content_advisory" value="Parental Advisory" required> Parental Advisory</label>
+                <label><input type="radio" name="content_advisory" value="Explicit" required> Explicit</label>
+                <label><input type="radio" name="content_advisory" value="Clean" required> Clean</label>
+                <label><input type="radio" name="content_advisory" value="Neither" required> Neither</label>
+            </div>
+
+            <label for="additional-info">Additional Information (Optional)</label>
+            <textarea id="additional-info" name="additional_info" rows="4" placeholder="Enter any additional details about your submission"></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
